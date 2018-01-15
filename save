@@ -1,0 +1,32 @@
+document.onreadystatechange = function () {
+    if (document.readyState == "interactive") {
+        document.getElementById('contact-form').onsubmit =  function() {
+               
+                let city = document.getElementById('form_city').value;
+                console.log(city);
+                req = new XMLHttpRequest();
+                req.onreadystatechange = function(event) {
+                // XMLHttpRequest.DONE === 4
+                    if (this.readyState === XMLHttpRequest.DONE) {
+                        if (this.status === 200) {
+                            console.log("Réponse reçue: %s", this.responseText);
+                            document.getElementById('meteo').getElementsByTagName('H2')[0].innerText = 'Weather in ' + city ;
+                            let meteo = JSON.parse(this.responseText);
+                            let temperature = Math.round(meteo.main.temp);
+                            let icon = JSON.stringify(meteo.weather[0].icon);
+                            icon = icon.replace("\"","");
+                            icon = icon.replace("\"","");
+                            document.getElementById('icon').setAttribute('src', 'http://openweathermap.org/img/w/' + icon + '.png')
+                            document.getElementById('meteo').getElementsByTagName('span')[0].innerText = temperature +'°';//this.responseText;
+                        } else {
+                            console.log("Statut de la réponse: %d (%s)", this.status, this.statusText);
+                        }
+                    }
+                };
+                req.open('GET', 'http://api.openweathermap.org/data/2.5/weather?q='+ city + '&lang=fr&units=metric&APPID=44d86f7653820153047eaddb2d26c142', true);
+                req.send(null);
+                return false;
+
+        };
+    }
+ };
